@@ -14,6 +14,8 @@ class Monkey:
         self.false_monkey = 0
         self.inspect_counter = 0
 
+        self.factor = 1
+
     def op(self, worry):
         if self.add_term != None:
             return worry + self.add_term
@@ -31,7 +33,8 @@ class Monkey:
     def process(self, allMonkeys):
         for worry in self.worries:
             worry = self.op(worry)
-            worry //= 3
+            # worry //= 3
+            worry %= self.factor
             if self.test(worry):
                 allMonkeys[self.true_monkey].receiveItem(worry)
             else:
@@ -86,7 +89,15 @@ def sol():
 
     file.close()
 
-    for i in range(20):
+    factor = 1
+    for m in monkeys:
+        factor *= m.test_div
+
+    for m in monkeys:
+        m.factor = factor
+
+    # for i in range(20):
+    for i in range(10000):
         for m in monkeys:
             m.process(monkeys)
 
