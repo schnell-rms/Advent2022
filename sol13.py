@@ -1,8 +1,11 @@
 
 import time
 
-def isInOrder(left, right):
+from functools import total_ordering
 
+from math import prod
+
+def isInOrder(left, right):
     if (isinstance(left, int)) and isinstance(right, int):
         if left < right:
             return True
@@ -27,36 +30,42 @@ def isInOrder(left, right):
     if (isinstance(left, list)):
         return isInOrder(left, [right])
     
+    if not isinstance(right, list):
+        print(type(right))
+        print(right)
     assert(isinstance(right, list))
     return isInOrder([left], right)
+
+@total_ordering
+class comparor:
+    def __init__(self, value):
+        self.value = value
+    
+    def __eq__(self, other):
+        return isInOrder(self.value, other.value) == None
+    
+    def __lt__(self, other):
+        return isInOrder(self.value, other.value) == True
 
 def sol():
     start = time.perf_counter()
 
     file = open('inputs/input13.txt', 'r')
 
-    left_line = file.readline()
-    right_line = file.readline()
-
-    idx = 1
     score1 = 0
-    while left_line != "":
-        if isInOrder(eval(left_line), eval(right_line)):
-            # print(idx)
-            score1 += idx
 
-        left_line = "\n"
-        while(left_line.isspace()):
-            left_line = file.readline()
-        right_line = file.readline()
-        idx += 1
-
-    signal = [line.strip() for line in file.readlines()]
-
+    all_lines = [eval(line) for line in file if not line.isspace()]
     file.close()
 
+    for i in range(len(all_lines) // 2):
+        if isInOrder(all_lines[i*2], all_lines[i*2+1]):
+            # print(i+1)
+            score1 += i + 1
 
-    score2 = 0
+    dividers = [[[2]], [[6]]]
+    ordered = sorted([*all_lines, *dividers], key = comparor)
+
+    score2 = prod(ordered.index(x) + 1 for x in dividers)
 
     end = time.perf_counter()
 
