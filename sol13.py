@@ -2,6 +2,7 @@
 import time
 
 from functools import total_ordering
+from functools import cmp_to_key
 
 from math import prod
 
@@ -36,6 +37,15 @@ def isInOrder(left, right):
     assert(isinstance(right, list))
     return isInOrder([left], right)
 
+def cmp(left, right):
+    res = isInOrder(left, right)
+    match res:
+        case None:
+            return 0
+        case True:
+            return -1
+    return 1
+
 @total_ordering
 class comparor:
     def __init__(self, value):
@@ -63,7 +73,11 @@ def sol():
             score1 += i + 1
 
     dividers = [[[2]], [[6]]]
-    ordered = sorted([*all_lines, *dividers], key = comparor)
+    # ordered = sorted([*all_lines, *dividers], key = comparor)
+
+    ordered = sorted([*all_lines, *dividers], key=cmp_to_key(cmp))
+    # for x in ordered:
+    #     print(x)
 
     score2 = prod(ordered.index(x) + 1 for x in dividers)
 
