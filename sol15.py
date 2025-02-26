@@ -3,8 +3,6 @@ import time
 
 import utils
 
-from itertools import count, product
-
 def count_positions(nums, y):
 
     # Collect all x intervals on y row
@@ -60,7 +58,52 @@ def count_positions(nums, y):
 
     # Substract the beacons on that y
     counter -= nb_beacons_on_y
-    return counter
+
+    x = -1
+    if len(positions) == 2:
+        pp = list(positions)
+        if pp[0].start > pp[1].stop:
+            x = (pp[0].start + pp[1].stop) // 2
+        else:
+            x = (pp[1].start + pp[0].stop) // 2
+
+    return counter, x
+
+def sensor_range(sensor):
+    return abs(sensor[0] - sensor[2]) + abs(sensor[1] - sensor[3])
+
+def findFreePosition(nums):
+
+    for sensor in nums:
+        sensor.append(sensor_range(sensor))
+
+    for sensor in nums:
+        sx = sensor[0]
+        sy = sensor[1]
+        on_border_dist = sensor[4] + 1
+
+        for y in range(max(0,sy - on_border_dist), min(4000000, sy + on_border_dist)):
+            dy = abs(sy - y)
+            dx = on_border_dist - dy
+            for borderx in [sx + dx, sx - dx]:
+                if borderx < 0 or borderx > 4000000:
+                    continue
+
+                found = True
+                for other_sensor in nums:
+                    if other_sensor is sensor:
+                        continue
+
+                    other_dist = other_sensor[4]
+                    curr_dist = sensor_range([*other_sensor[:2],borderx, y])
+                    if curr_dist <= other_dist:
+                        found = False
+                        break
+
+                if found:
+                    return borderx * 4000000 + y
+
+    return -1
 
 def sol():
     start = time.perf_counter()
@@ -72,10 +115,22 @@ def sol():
 
     # simple
     # score1 = count_positions(nums, 10)
-    score1 = count_positions(nums, 2000000)
+    score1, _ = count_positions(nums, 2000000)
 
+    # Brute force:
+    # x = -1
+    # y = -1
+    # while x < 0 and y<=4e6:
+    #     y += 1
+    #     score2, x = count_positions(nums, y)
+    # score2 = x * int(4e6) + y
 
-    score2 = 0
+    # Other method:
+    # That point must be near at least one sensor area:
+    # For each sensor go along its border and check each point near it
+    # to be far away from all other sensors
+    # 4 times faster:
+    score2 = findFreePosition(nums)
 
     end = time.perf_counter()
 
