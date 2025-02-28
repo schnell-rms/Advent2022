@@ -3,6 +3,7 @@ import time
 
 import utils
 
+
 from functools import cache
 
 class myTuple(tuple):
@@ -87,7 +88,7 @@ def sol():
     score1 = sum(x.score(24) for x in blue_prints)
 
     # Second star:
-    score2 = math.product(x.score(24) for x in blue_prints[:2])
+    score2 = math.prod([x.solve(32,myTuple((0,0,0,0)), myTuple((1,0,0,0))) for x in blue_prints[:3]])
 
     end = time.perf_counter()
 
