@@ -22,16 +22,16 @@ def sol():
     def decrypt(numbers, factor, repeat):
         for _ in range(repeat):
             for num in cp:
-                pos = [idx for idx, val in enumerate(numbers) if num.orig_idx == val.orig_idx][0]
+                pos = next(idx for idx, val in enumerate(numbers) if num.orig_idx == val.orig_idx) 
                 numbers.rotate(-pos)
                 numbers.popleft()
                 numbers.rotate( - ((num.value * factor) % (n-1)))
                 numbers.appendleft(num)
 
-        pos0 = [idx for idx, num in enumerate(numbers) if num.value == 0][0]
+        pos0 = next(idx for idx, num in enumerate(numbers) if num.value == 0)
         numbers.rotate(-pos0)
 
-        return factor * (numbers[1000 % n][1] + numbers[2000 % n][1] + numbers[3000 % n][1])
+        return factor * (numbers[1000 % n].value + numbers[2000 % n].value + numbers[3000 % n].value)
 
     # First star
     numbers2 = numbers.copy()
