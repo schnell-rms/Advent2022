@@ -2,7 +2,9 @@ import time
 
 import utils
 
-from collections import deque
+from collections import deque, namedtuple
+
+NumberInfo = namedtuple("NumberInfo", ["orig_idx", "value"])
 
 def sol():
     start = time.perf_counter()
@@ -11,21 +13,21 @@ def sol():
     with open('inputs/input20.txt', 'r') as file:
         id = 0
         for line in file:
-            numbers.append((id, utils.firstNumber(line)))
+            numbers.append(NumberInfo(id, utils.firstNumber(line)))
             id += 1
 
     cp = list(numbers)
     for num in cp:
-        pos = [idx for idx, val in enumerate(numbers) if num[0] == val[0]][0]
+        pos = [idx for idx, val in enumerate(numbers) if num.orig_idx == val.orig_idx][0]
         numbers.rotate(-pos)
         numbers.popleft()
-        numbers.rotate(-num[1])
+        numbers.rotate(-num.value)
         numbers.appendleft(num)
 
 
     print(num)
 
-    pos0 = [idx for idx, val in enumerate(numbers) if val[1] == 0][0]
+    pos0 = [idx for idx, num in enumerate(numbers) if num.value == 0][0]
     numbers.rotate(-pos0)
 
     n = len(numbers)
