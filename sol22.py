@@ -2,6 +2,8 @@ import time
 
 from functools import reduce
 
+from typing import Callable
+
 import re
 
 class xy_tuple(tuple):
@@ -63,32 +65,36 @@ def sol():
 
     draw = [">","v","<","^"]
 
-    pos = xy_tuple((startX, startY))
-    notes[pos] = draw[0]
-    dirIdx = 0
+    def move(movefunction:Callable, pos:xy_tuple, dirIdx:int , doDraw: bool):
+        if doDraw: notes[pos] = draw[0]
 
-    for d in directions:
-        match d:
-            case "L":
-                dirIdx += 3
-                dirIdx %= 4
-                notes[pos] = draw[dirIdx]
-                pass
-            case "R":
-                dirIdx += 1
-                dirIdx %= 4
-                notes[pos] = draw[dirIdx]
-                pass
-            case _:
-                for _ in range(int(d)):
-                    pos = moveOneStep(orientationXY[dirIdx], pos)
-                    notes[pos] = draw[dirIdx]
-    
+        for d in directions:
+            match d:
+                case "L":
+                    dirIdx += 3
+                    dirIdx %= 4
+                    if doDraw: notes[pos] = draw[dirIdx]
+                    pass
+                case "R":
+                    dirIdx += 1
+                    dirIdx %= 4
+                    if doDraw: notes[pos] = draw[dirIdx]
+                    pass
+                case _:
+                    for _ in range(int(d)):
+                        pos = movefunction(orientationXY[dirIdx], pos)
+                        if doDraw: notes[pos] = draw[dirIdx]
+
+        return pos, dirIdx
 
     # printNotes()
 
+    # First star:
+    pos, dirIdx = move(moveOneStep, xy_tuple((startX, startY)), 0, False)
     pos += xy_tuple((1,1)) # because of starting from (0,0) in the code
     score1 = 1000 * pos[1] + 4 * pos[0] + dirIdx
+
+    # Second star
     score2 = 0
 
     end = time.perf_counter()
