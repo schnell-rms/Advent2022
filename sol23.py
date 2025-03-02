@@ -4,6 +4,8 @@ from functools import reduce
 
 from typing import Callable
 
+from itertools import count
+
 # import math
 
 import re
@@ -82,27 +84,33 @@ def sol():
         # Still here? Than no move:
         nextGarden.add(elf_pos)
 
+    score1 = 0
+    score2 = 0
+
     firstCheckRuleIdx = 0
-    for i in range(10):
+    for i in count(0):
         new_garden = set()
         for elf in garden:
             moveElf(elf, garden, new_garden, firstCheckRuleIdx)
 
         firstCheckRuleIdx += 1
         firstCheckRuleIdx %= 4
+
+        if garden == new_garden:
+            score2 = i + 1
+            break
+
         garden = new_garden
         # printGarden(garden)
 
-    minX = reduce(lambda e, other: e if e.x < other.x else other, garden).x
-    maxX = reduce(lambda e, other: e if e.x > other.x else other, garden).x
-    minY = reduce(lambda e, other: e if e.y < other.y else other, garden).y
-    maxY = reduce(lambda e, other: e if e.y > other.y else other, garden).y
-
-    # print("X: ", minX, maxX, "Y: ", minY, maxY)
-
-    nb_positions = (maxX - minX + 1) * (maxY - minY + 1)
-    score1 = nb_positions - len(garden)
-    score2 = 0
+        if (i == 9):
+            minX = reduce(lambda e, other: e if e.x < other.x else other, garden).x
+            maxX = reduce(lambda e, other: e if e.x > other.x else other, garden).x
+            minY = reduce(lambda e, other: e if e.y < other.y else other, garden).y
+            maxY = reduce(lambda e, other: e if e.y > other.y else other, garden).y
+            # print("X: ", minX, maxX, "Y: ", minY, maxY)
+            nb_positions = (maxX - minX + 1) * (maxY - minY + 1)
+            score1 = nb_positions - len(garden)
 
     end = time.perf_counter()
 
