@@ -7,3 +7,4 @@ def extractAllNumbers(str):
 def firstNumber(str):
     m = re.search(r"-?\d+", str)
     return None if m == None else int(m.group(0))
+
